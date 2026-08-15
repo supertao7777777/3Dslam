@@ -1,0 +1,34 @@
+<launch>
+    <param name="use_sim_time" value="false" />
+    <arg name="project" default="lio_localization"/>
+    <arg name="publish_world_to_base_link_static" default="false" />
+    <arg name="enable_location_tf" default="true" />
+    <node pkg="rviz" type="rviz" name="$(arg project)_rviz" args="-d $(find lio_localization)/launch/include/loc.rviz" />
+
+    <!-- World -> base_link (static). Adjust xyz/rpy if you need an offset. -->
+    <node if="$(arg publish_world_to_base_link_static)" pkg="tf" type="static_transform_publisher" name="world_to_base_link" args="0 0 0 0 0 0 world base_link 100" />
+    
+    <node pkg="tf" type="static_transform_publisher" name="sensor_joint" args="0 0 0 0 0 0 base_link os_sensor 100" />
+    <node pkg="tf" type="static_transform_publisher" name="sensor_joint2" args="0 0 0 0 0 0 base_link velodyne 100" />
+
+    <!-- Parameters -->
+    <rosparam file="$(find lio_localization)/config/sim_mid360.yaml" command="load" />
+    <!-- sim_mid360.yaml sets location/publish_tf: false; override here to make TF tree include world->base_link -->
+    <param name="location/publish_tf" value="$(arg enable_location_tf)" />
+
+    <!--- LOAM -->
+    <node pkg="$(arg project)" type="$(arg project)_featureExtract"   name="$(arg project)_featureExtract"    output="screen" 	respawn="true"   />
+
+    <node pkg="$(arg project)" type="$(arg project)_maplocalization"   name="$(arg project)_maplocalization"   output="screen"   >
+
+    <!-- <node pkg="$(arg project)" type="$(arg project)_featureExtract"   name="$(arg project)_featureExtract"    output="screen" 	respawn="true"   > -->
+
+    </node>
+
+    <!--- Run Rviz-->
+
+
+    <arg name="bag_filename" default="2022-03-16-13-46-11.bag"/>
+    <!-- <node name="playbag" pkg="rosbag" type="play" args="clock $(arg bag_filename) -s 100 -r 1.0 " /> -->
+
+</launch>

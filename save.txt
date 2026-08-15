@@ -1,0 +1,5 @@
+rosservice call /save_map "resolution: 0.0
+destination: ''"  
+
+rosservice call /save_pose "resolution: 0.0
+destination: ''" 

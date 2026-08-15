@@ -1,0 +1,5 @@
+<launch>
+<rosparam command="load" 
+            file="$(find landmark)/config/param.yaml" />
+<node name ="DM_Reader" pkg="landmark" type="tcp_server_node" output="screen"></node>
+</launch>

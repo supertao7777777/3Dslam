@@ -1,0 +1,22 @@
+digraph G {
+"base_link" -> "imu_base_link"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 214.481 sec old)\nBuffer length: 0.000 sec\n"];
+"odom" -> "base_link"[label="Broadcaster: /gazebo\nAverage rate: 104.667 Hz\nMost recent transform: 214.477 ( 0.004 sec old)\nBuffer length: 1.500 sec\n"];
+"base_link" -> "livox_base"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 214.481 sec old)\nBuffer length: 0.000 sec\n"];
+"livox_base" -> "livox"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 214.481 sec old)\nBuffer length: 0.000 sec\n"];
+"map" -> "odom"[label="Broadcaster: /lio_localization_maplocalization\nAverage rate: 5.240 Hz\nMost recent transform: 214.305 ( 0.176 sec old)\nBuffer length: 1.336 sec\n"];
+"scout::base_link" -> "laser_livox"[label="Broadcaster: /gazebo\nAverage rate: 9.644 Hz\nMost recent transform: 214.325 ( 0.156 sec old)\nBuffer length: 1.348 sec\n"];
+"base_link" -> "front_left_wheel_link"[label="Broadcaster: /robot_state_publisher\nAverage rate: 50.676 Hz\nMost recent transform: 214.465 ( 0.016 sec old)\nBuffer length: 1.480 sec\n"];
+"base_link" -> "front_right_wheel_link"[label="Broadcaster: /robot_state_publisher\nAverage rate: 50.676 Hz\nMost recent transform: 214.465 ( 0.016 sec old)\nBuffer length: 1.480 sec\n"];
+"base_link" -> "rear_left_wheel_link"[label="Broadcaster: /robot_state_publisher\nAverage rate: 50.676 Hz\nMost recent transform: 214.465 ( 0.016 sec old)\nBuffer length: 1.480 sec\n"];
+"base_link" -> "rear_right_wheel_link"[label="Broadcaster: /robot_state_publisher\nAverage rate: 50.676 Hz\nMost recent transform: 214.465 ( 0.016 sec old)\nBuffer length: 1.480 sec\n"];
+"base_link" -> "os_sensor"[label="Broadcaster: /sensor_joint\nAverage rate: 10.714 Hz\nMost recent transform: 214.525 ( -0.044 sec old)\nBuffer length: 1.400 sec\n"];
+"base_link" -> "velodyne"[label="Broadcaster: /sensor_joint2\nAverage rate: 10.714 Hz\nMost recent transform: 214.537 ( -0.056 sec old)\nBuffer length: 1.400 sec\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 214.481"[ shape=plaintext ] ;
+ }->"map";
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 214.481"[ shape=plaintext ] ;
+ }->"scout::base_link";
+}

@@ -1,0 +1,27 @@
+<launch>
+    <param name="use_sim_time" value="false" />
+    <arg name="project" default="lio_localization"/>
+    <node pkg="rviz" type="rviz" name="$(arg project)_rviz" args="-d $(find lio_localization)/launch/include/loc.rviz" />
+    
+    <node pkg="tf" type="static_transform_publisher" name="sensor_joint" args="0 0 0 0 0 0 base_link os_sensor 100" />
+    <node pkg="tf" type="static_transform_publisher" name="sensor_joint2" args="0 0 0 0 0 0 base_link velodyne 100" />
+
+    <!-- Parameters -->
+    <rosparam file="$(find lio_localization)/config/mid360.yaml" command="load" />
+
+    <!--- LOAM -->
+    <node pkg="$(arg project)" type="$(arg project)_featureExtract"   name="$(arg project)_featureExtract"    output="screen" 	respawn="true"   />
+
+    <node pkg="$(arg project)" type="$(arg project)_maplocalization"   name="$(arg project)_maplocalization"    output="screen"   launch-prefix="gdb -ex run --args" >
+
+    <!-- <node pkg="$(arg project)" type="$(arg project)_featureExtract"   name="$(arg project)_featureExtract"    output="screen" 	respawn="true"   > -->
+
+    </node>
+
+    <!--- Run Rviz-->
+
+
+    <arg name="bag_filename" default="2022-03-16-13-46-11.bag"/>
+    <!-- <node name="playbag" pkg="rosbag" type="play" args="clock $(arg bag_filename) -s 100 -r 1.0 " /> -->
+
+</launch>

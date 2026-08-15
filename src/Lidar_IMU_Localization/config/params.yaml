@@ -1,0 +1,58 @@
+common:
+  # Topics
+  pointCloudTopic:  "/livox/lidar" #"/livox/lidar" #"velodyne_points"    "points_raw"     rslidar_points      # Point cloud data
+  imuTopic: "/livox/imu" #"/livox/imu" #"imu_data" #"imu_raw"          # IMU data
+
+
+feature_extract:
+  lidarFrame: "base_link"
+
+  # Sensor Settings
+  sensor: velodyne #velodyne                            # lidar sensor type, either 'velodyne' or 'ouster' 'robosense' 'livox' or 'mid360'
+  N_SCAN: 32                                  # number of lidar channel (i.e.,Velodyne/Ouster/Robosense: 16, 32, 64, 128,Livox Horizon:6)
+  Horizon_SCAN: 1800                          # lidar horizontal resolution (Velodyne:1800, Ouster:512,1024,2048,Livox Horizon: 4000)
+  downsampleRate: 1                           # default: 1. Downsample your data if too many points. i.e., 16 = 64 / 4, 16 = 16 / 1
+  lidarMinRange: 1.0                          # default: 1.0, minimum lidar range to be used
+  lidarMaxRange: 1000.0                       # default: 1000.0, maximum lidar range to be used
+
+  # LOAM feature threshold
+  edgeThreshold: 1.0
+  surfThreshold: 0.1
+  edgeFeatureMinValidNum: 10
+  surfFeatureMinValidNum: 100
+
+  # voxel filter paprams
+  odometrySurfLeafSize: 0.5                     # default: 0.4 - outdoor, 0.2 - indoor  only use surf ds here
+
+
+mapping:
+  IMU_Mode: 2    # 0-not use imu, 1-use imu remove rotation distort, 2-tightly coupled imu
+  use_imu_z: true
+  filter_parameter_corner: 0.2  # Voxel Filter Size Use to Downsize Map Cloud
+  filter_parameter_surf: 0.5
+  extrinsic_T: [ 0, 0, 0.0] # lidar to imu
+  extrinsic_R: [ 1, 0, 0, 
+                 0, 1, 0, 
+                 0, 0, 1]
+
+
+location:
+  filedir: "/data/shunyu/relocazation_data"
+  pointCloudTopic: "/laser_cloud_filtered"
+  imuTopic: "/imu/data"
+  IMU_Mode: 2
+  use_imu_z: true
+  debug_drift: false
+  debug_drift_throttle_sec: 1.0
+  debug_drift_trans_warn_m: 0.05
+  debug_drift_yaw_warn_deg: 1.0
+  publish_tf: true
+  publish_path: true
+  publish_odom_imu: true
+  use_lio: false
+  publish_downsampled_global_map: false   # true 发布GlobalMap.pcd（降采样全局地图），false 发布CornerMap.pcd（全局角点）
+  publish_leaf_size: 0.0                  # 发布前额外体素滤波尺寸（米），0表示不再滤波
+  corner_leaf_: 0.4
+  surf_leaf_: 0.5
+  surround_search_radius: 15.0   # radius (m) to collect local map around initial pose
+  

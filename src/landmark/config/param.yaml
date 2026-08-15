@@ -1,0 +1,7 @@
+DM_Reader:
+  PORT: 5004               #端口号
+  SERVER_IP: "192.168.16.6" #主机ip
+  BUFFER_SIZE: 1024
+  translation_weight: 50 #0.55e4
+  rotation_weight: 50 #1e5
+

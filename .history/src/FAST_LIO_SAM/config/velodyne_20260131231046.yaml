@@ -1,0 +1,36 @@
+common:
+    # Velodyne 点云话题（sensor_msgs/PointCloud2）
+    lid_topic: "/velodyne_points"
+    # 对应的 IMU 话题（sensor_msgs/Imu）
+    imu_topic: "/imu/data"
+    # 外部时间同步若不可用才打开
+    time_sync_en: false
+
+preprocess:
+    lidar_type: 2              # 1: Livox, 2: Velodyne, 3: Ouster, 4: Robosense
+    scan_line: 16              # 根据具体型号修改：16/32/64
+    blind: 2.0                 # 小于此距离的点剔除
+
+mapping:
+    acc_cov: 0.1
+    gyr_cov: 0.1
+    b_acc_cov: 0.0001
+    b_gyr_cov: 0.0001
+    fov_degree: 180            # Velodyne 环视，保守设 180，可按需求调
+    det_range: 200.0           # 有效建图距离
+    extrinsic_est_en: false    # 若已标定外参则保持 false
+    # LiDAR 到 IMU 的位姿（示例为单位变换，请替换为实测标定值）
+    extrinsic_T: [0.0, 0.0, 0.0]
+    extrinsic_R: [1, 0, 0,
+                  0, 1, 0,
+                  0, 0, 1]
+
+publish:
+    path_en: true
+    scan_publish_en: true        # 发布矫正后的单帧
+    dense_publish_en: true       # 发布全局点云
+    scan_bodyframe_pub_en: true  # 发布 IMU 坐标系点云
+
+pcd_save:
+    pcd_save_en: false           # 如需保存地图改为 true
+    interval: -1

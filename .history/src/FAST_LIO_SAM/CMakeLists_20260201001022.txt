@@ -1,0 +1,114 @@
+cmake_minimum_required(VERSION 3.5.0)
+project(fast_lio_sam)
+
+SET(CMAKE_BUILD_TYPE "Release")
+# SET(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+# # 调试语句
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g -O1")
+
+# 设置编译选项 - 避免任何优化问题
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -fexceptions -O2")
+
+add_definitions(-DROOT_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/\")
+
+# 首先设置 PCL 相关环境
+set(PCL_DIR "/usr/local/share/pcl-1.10")
+set(ENV{PCL_DIR} "/usr/local/share/pcl-1.10")
+set(PCL_ROOT "/usr/local")
+
+# 查找 catkin 和其他依赖
+find_package(catkin REQUIRED COMPONENTS
+  roscpp rospy std_msgs geometry_msgs nav_msgs sensor_msgs
+  tf pcl_ros message_generation eigen_conversions
+  livox_ros_driver
+)
+
+# 强制设置 PCL 包含目录和库目录
+set(PCL_INCLUDE_DIRS "/usr/local/include/pcl-1.10")
+set(PCL_LIBRARY_DIRS "/usr/local/lib")
+
+# 手动定义 PCL 库
+set(PCL_LIBRARIES
+  pcl_common pcl_kdtree pcl_search pcl_filters 
+  pcl_registration pcl_io pcl_features 
+  pcl_segmentation pcl_visualization
+)
+
+find_package(OpenMP QUIET)
+if(OpenMP_FOUND)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
+find_package(PythonLibs REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system filesystem thread chrono timer serialization date_time)
+find_package(Eigen3 REQUIRED)
+
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};/usr/share/cmake/geographiclib")
+find_package(GeographicLib REQUIRED)
+find_package(GTSAM REQUIRED QUIET)
+
+# 包含目录
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  ${PCL_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIR}
+  ${PYTHON_INCLUDE_DIRS}
+  ${GTSAM_INCLUDE_DIR}
+  ${GeographicLib_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
+  include
+)
+
+# 消息和服务文件
+add_message_files(FILES Pose6D.msg QRcode.msg)
+add_service_files(
+  DIRECTORY srv
+  FILES save_map.srv save_pose.srv
+)
+
+generate_messages(DEPENDENCIES geometry_msgs)
+
+catkin_package(
+  CATKIN_DEPENDS 
+    geometry_msgs nav_msgs roscpp rospy std_msgs message_runtime
+  DEPENDS 
+    EIGEN3 PCL GTSAM
+)
+
+# 创建库和目标
+add_library(ikd_Tree include/ikd-Tree/ikd_Tree.cpp)
+add_library(preprocess src/preprocess.cpp)
+add_executable(fastlio_sam_mapping src/laserMapping.cpp)
+
+# 强制链接库目录
+link_directories(/usr/local/lib /usr/lib/x86_64-linux-gnu)
+
+# 链接库 - 使用绝对路径确保链接正确
+target_link_libraries(fastlio_sam_mapping
+  ${catkin_LIBRARIES}
+  # 使用绝对路径链接 PCL 库
+  /usr/local/lib/libpcl_common.so
+  /usr/local/lib/libpcl_kdtree.so
+  /usr/local/lib/libpcl_search.so
+  /usr/local/lib/libpcl_filters.so
+  /usr/local/lib/libpcl_registration.so
+  /usr/local/lib/libpcl_io.so
+  /usr/local/lib/libpcl_features.so
+  /usr/local/lib/libpcl_segmentation.so
+  /usr/local/lib/libpcl_visualization.so
+  ${PYTHON_LIBRARIES}
+  ${GeographicLib_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  ${Boost_LIBRARIES}
+  ikd_Tree
+  preprocess
+  gtsam
+  # 添加必要的系统库
+  stdc++ 
+)
+
+target_include_directories(fastlio_sam_mapping PRIVATE ${PYTHON_INCLUDE_DIRS})

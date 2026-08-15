@@ -1,7 +1,0 @@
-# 请求：保存路径（可选，为空则使用默认路径）
-string destination
----
-# 响应：是否成功
-bool success
-# 附加消息
-string message
